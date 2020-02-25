@@ -1,25 +1,40 @@
 package com.example.page.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Message {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
+
+    @NotBlank(message = "Pleas fill the message")
+    @Length(max = 2048, message = "Message is too long")
     private String text;
+    @Length(max = 255, message = "Message is too long")
     private String tag;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    private String filename;
 
     public Message() {
     }
 
-    public Message(String text, String tag) {
+    public Message(String text, String tag, User user) {
+        this.author = user;
         this.text = text;
         this.tag = tag;
+    }
+
+    public String getAuthorName() {
+        return author != null ? author.getUsername() : "<none>";
     }
 
     public void setText(String text)
@@ -31,11 +46,11 @@ public class Message {
         return text;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -45,5 +60,21 @@ public class Message {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 }
